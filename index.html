@@ -210,7 +210,7 @@
         
         // Optimized audio pool with better memory management
         const audioPool = [];
-        const poolSize = 5; // Reduced pool size for better performance
+        const poolSize = 6; // Reduced pool size for better performance
         let currentAudioIndex = 0;
         let audioBuffer = null;
         let audioContext = null;
@@ -224,12 +224,12 @@
         }
 
         // Load audio buffer once for reuse
-        async function loadAudioBuffer() {
+        async function loadAudioBuffer(track) {
             if (audioBuffer) return audioBuffer;
             
             try {
                 const audioCtx = initializeAudioContext();
-                const response = await fetch('n2.m4a');
+                const response = await fetch(track);
                 const arrayBuffer = await response.arrayBuffer();
                 audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
                 return audioBuffer;
@@ -241,7 +241,7 @@
 
         // Initialize fallback audio pool for HTML Audio API
         for (let i = 0; i < poolSize; i++) {
-            const audio = new Audio('n2.m4a');
+            const audio = new Audio('n' + ((i % 2)+1) + '.m4a');
             audio.preload = 'auto';
             audio.volume = 1.0;
             audioPool.push(audio);
@@ -320,7 +320,9 @@
         window.addEventListener('load', async () => {
             // Initialize Web Audio API and load buffer
             try {
-                await loadAudioBuffer();
+                await loadAudioBuffer('n1.m4a');
+                await loadAudioBuffer('n2.m4a');
+                await loadAudioBuffer('n3.m4a');
             } catch (error) {
                 console.log('Web Audio initialization failed, using HTML Audio fallback');
             }
