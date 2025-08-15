@@ -241,7 +241,7 @@
 
         // Initialize fallback audio pool for HTML Audio API
         for (let i = 0; i < poolSize; i++) {
-            const audio = new Audio('n' + ((i % 2)+1) + '.m4a');
+            const audio = new Audio('n' + ((i % 3)+1) + '.m4a');
             audio.preload = 'auto';
             audio.volume = 1.0;
             audioPool.push(audio);
@@ -270,27 +270,6 @@
         }
 
         async function playSound() {
-            // Try Web Audio API first for better performance
-            if (audioBuffer && audioContext) {
-                try {
-                    const audioCtx = audioContext;
-                    if (audioCtx.state === 'suspended') {
-                        await audioCtx.resume();
-                    }
-                    
-                    const source = audioCtx.createBufferSource();
-                    source.buffer = audioBuffer;
-                    source.connect(audioCtx.destination);
-                    source.start(0);
-                    
-                    createAnimatedNic();
-                    return;
-                } catch (error) {
-                    console.log('Web Audio API failed, falling back to HTML Audio:', error);
-                }
-            }
-            
-            // Fallback to HTML Audio API with optimized approach
             const audio = audioPool[currentAudioIndex];
             
             // Stop and reset current audio to prevent overlap issues
