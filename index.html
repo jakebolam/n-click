@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <title>clickNic</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .button-3d {
+            width: 200px;
+            height: 200px;
+            background: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
+            box-shadow:
+                0 10px 20px rgba(0, 0, 0, 0.2),
+                0 6px 10px rgba(0, 0, 0, 0.15),
+                inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .button-3d:hover {
+            box-shadow:
+                0 12px 24px rgba(0, 0, 0, 0.2),
+                0 8px 12px rgba(0, 0, 0, 0.15),
+                inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .button-3d:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 4px 8px rgba(0, 0, 0, 0.2),
+                0 2px 4px rgba(0, 0, 0, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .emoji {
+            user-select: none;
+        }
+
+        .animated-nic {
+            position: fixed;
+            width: 96px;
+            height: 96px;
+            /* font-size: 40px; */
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 1;
+            user-select: none;
+        }
+
+        @keyframes nicPop {
+            0% {
+                opacity: 0;
+                transform: translateY(100px) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(0) scale(1.2);
+            }
+            40% {
+                transform: translateY(-20px) translateX(10px) scale(1);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-15px) scale(1.1);
+            }
+            80% {
+                transform: translateY(-30px) translateX(20px) scale(0.9);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) translateX(0) scale(0.5);
+            }
+        }
+
+        .animated-nic.show {
+            animation: nicPop 2s ease-out forwards;
+        }
+
+        .counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            user-select: none;
+        }
+
+        .personal-counter {
+            position: absolute;
+            top: 20px;
+            right: 220px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            user-select: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a1a1a;
+            }
+
+            .button-3d {
+                background: #2d2d2d;
+                box-shadow:
+                    0 10px 20px rgba(0, 0, 0, 0.4),
+                    0 6px 10px rgba(0, 0, 0, 0.3),
+                    inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+            }
+
+            .button-3d:hover {
+                box-shadow:
+                    0 12px 24px rgba(0, 0, 0, 0.4),
+                    0 8px 12px rgba(0, 0, 0, 0.3),
+                    inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+            }
+
+            .button-3d:active {
+                box-shadow:
+                    0 4px 8px rgba(0, 0, 0, 0.4),
+                    0 2px 4px rgba(0, 0, 0, 0.3),
+                    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+            }
+
+            .counter, .personal-counter {
+                background: rgba(45, 45, 45, 0.9);
+                color: white;
+            }
+
+            .unmute-notification {
+                background: rgba(45, 45, 45, 0.9);
+                color: white;
+            }
+        }
+
+        .unmute-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            user-select: none;
+            z-index: 1000;
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .unmute-notification {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+
+        .nic-img {
+            background-image: url(n.png);
+            background-repeat: no-repeat;
+            background-size: 96px 96px;
+            cursor: default;
+            height: 96px;
+            width: 96px;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="button-3d" id="emojiButton">
+        <div class="nic-img"></div>
+    </button>
+    <div class="unmute-notification">Unmute your phone if you don't hear sound 🔊</div>
+
+    <script>
+        const button = document.getElementById('emojiButton');
+        
+        // Optimized audio pool with better memory management
+        const audioPool = [];
+        const poolSize = 5; // Reduced pool size for better performance
+        let currentAudioIndex = 0;
+        let audioBuffer = null;
+        let audioContext = null;
+
+        // Initialize Web Audio API for better performance
+        function initializeAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        // Load audio buffer once for reuse
+        async function loadAudioBuffer() {
+            if (audioBuffer) return audioBuffer;
+            
+            try {
+                const audioCtx = initializeAudioContext();
+                const response = await fetch('n2.m4a');
+                const arrayBuffer = await response.arrayBuffer();
+                audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                return audioBuffer;
+            } catch (error) {
+                console.log('Failed to load audio buffer, falling back to HTML Audio:', error);
+                return null;
+            }
+        }
+
+        // Initialize fallback audio pool for HTML Audio API
+        for (let i = 0; i < poolSize; i++) {
+            const audio = new Audio('n2.m4a');
+            audio.preload = 'auto';
+            audio.volume = 1.0;
+            audioPool.push(audio);
+        }
+
+        function createAnimatedNic() {
+            const nic = document.createElement('div');
+            nic.className = 'animated-nic';
+            nic.innerHTML = '<div class="nic-img"></div>';
+            
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight * 0.6) + (window.innerHeight * 0.2);
+            
+            nic.style.left = x + 'px';
+            nic.style.top = y + 'px';
+            
+            document.body.appendChild(nic);
+            
+            setTimeout(() => nic.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                if (nic.parentNode) {
+                    document.body.removeChild(nic);
+                }
+            }, 2000);
+        }
+
+        async function playSound() {
+            // Try Web Audio API first for better performance
+            if (audioBuffer && audioContext) {
+                try {
+                    const audioCtx = audioContext;
+                    if (audioCtx.state === 'suspended') {
+                        await audioCtx.resume();
+                    }
+                    
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = audioBuffer;
+                    source.connect(audioCtx.destination);
+                    source.start(0);
+                    
+                    createAnimatedNic();
+                    return;
+                } catch (error) {
+                    console.log('Web Audio API failed, falling back to HTML Audio:', error);
+                }
+            }
+            
+            // Fallback to HTML Audio API with optimized approach
+            const audio = audioPool[currentAudioIndex];
+            
+            // Stop and reset current audio to prevent overlap issues
+            if (!audio.paused) {
+                audio.pause();
+            }
+            audio.currentTime = 0;
+            
+            // Simple play with minimal error handling to avoid promise stacking
+            try {
+                await audio.play();
+            } catch (error) {
+                // Move to next audio instance if current one fails
+                currentAudioIndex = (currentAudioIndex + 1) % poolSize;
+            }
+
+            createAnimatedNic();
+            currentAudioIndex = (currentAudioIndex + 1) % poolSize;
+        }
+
+        button.addEventListener('click', () => {
+            // Always play sound immediately - highest priority
+            playSound();
+        });
+
+        // Initialize audio system and preload files when page loads
+        window.addEventListener('load', async () => {
+            // Initialize Web Audio API and load buffer
+            try {
+                await loadAudioBuffer();
+            } catch (error) {
+                console.log('Web Audio initialization failed, using HTML Audio fallback');
+            }
+            
+            // Preload HTML Audio fallback files
+            audioPool.forEach(audio => {
+                audio.load();
+            });
+            
+        });
+    </script>
+</body>
+
+</html>
